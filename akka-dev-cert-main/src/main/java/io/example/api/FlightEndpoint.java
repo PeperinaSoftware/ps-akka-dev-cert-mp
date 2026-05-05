@@ -63,7 +63,7 @@ public class FlightEndpoint extends AbstractHttpEndpoint {
 
     @Delete("/bookings/{slotId}/{bookingId}")
     public CompletionStage<HttpResponse> cancelBooking(String slotId, String bookingId) {
-        log.info("Canceling booking id {}", bookingId);
+        log.info("Canceling booking {} for slot {}", bookingId, slotId);
         return componentClient.forEventSourcedEntity(slotId)
                 .method(BookingSlotEntity::cancelBooking)
                 .invokeAsync(bookingId)
@@ -123,6 +123,8 @@ public class FlightEndpoint extends AbstractHttpEndpoint {
             LocalDateTime slotTime = LocalDateTime.of(
                     Integer.parseInt(parts[0]), Integer.parseInt(parts[1]),
                     Integer.parseInt(parts[2]), Integer.parseInt(parts[3]), 0);
+            // Slot IDs and server time are both treated as UTC.
+            // Clients must submit slotId values in UTC format (YYYY-MM-DD-HH).
             return slotTime.isAfter(LocalDateTime.now());
         } catch (Exception e) {
             throw HttpException.badRequest("invalid slot ID format, expected YYYY-MM-DD-HH");

@@ -4,11 +4,18 @@ import akka.Done;
 import akka.javasdk.annotations.Component;
 import akka.javasdk.annotations.TypeName;
 import akka.javasdk.eventsourcedentity.EventSourcedEntity;
+import akka.javasdk.eventsourcedentity.EventSourcedEntityContext;
 import io.example.domain.Participant.ParticipantType;
 
 @Component(id = "participant-slot")
 public class ParticipantSlotEntity
                 extends EventSourcedEntity<ParticipantSlotEntity.State, ParticipantSlotEntity.Event> {
+
+        private final String entityId;
+
+        public ParticipantSlotEntity(EventSourcedEntityContext context) {
+                this.entityId = context.entityId();
+        }
 
         public Effect<Done> markAvailable(Commands.MarkAvailable cmd) {
                 var event = new Event.MarkedAvailable(cmd.slotId(), cmd.participantId(), cmd.participantType());
@@ -32,7 +39,7 @@ public class ParticipantSlotEntity
 
         @Override
         public State emptyState() {
-                return null;
+                return new State("", "", null, "");
         }
 
         @Override

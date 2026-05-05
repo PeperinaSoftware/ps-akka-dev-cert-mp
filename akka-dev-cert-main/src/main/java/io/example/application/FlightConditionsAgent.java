@@ -11,7 +11,7 @@ import java.time.temporal.ChronoUnit;
 @Component(id = "flight-conditions-agent")
 public class FlightConditionsAgent extends Agent {
 
-    public record ConditionsReport(String timeSlotId, Boolean meetsRequirements) {}
+    public record ConditionsReport(String timeSlotId, boolean meetsRequirements) {}
 
     private static final String SYSTEM_MESSAGE = """
             You are a flight conditions evaluator. Respond ONLY with a valid JSON object. No explanation, no preamble, no markdown.

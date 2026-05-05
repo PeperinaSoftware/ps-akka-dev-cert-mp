@@ -54,6 +54,9 @@ public class BookingSlotEntity extends EventSourcedEntity<Timeslot, BookingEvent
         if (bookings.isEmpty()) {
             return effects().error("booking not found: " + bookingId);
         }
+        if (bookings.size() != 3) {
+            return effects().error("inconsistent booking state for: " + bookingId);
+        }
         var b0 = bookings.get(0);
         var b1 = bookings.get(1);
         var b2 = bookings.get(2);

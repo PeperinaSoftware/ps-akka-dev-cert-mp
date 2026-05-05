@@ -26,7 +26,8 @@
       "Bash(curl.exe -s -H \"Content-Type: application/json\" -X POST -d \"{\\\\\"bookingId\\\\\": \\\\\"booking2\\\\\", \\\\\"aircraftId\\\\\": \\\\\"superplane\\\\\", \\\\\"instructorId\\\\\": \\\\\"superteacher\\\\\", \\\\\"studentId\\\\\": \\\\\"alice\\\\\"}\" http://localhost:9000/flight/bookings/2026-12-10-10)",
       "Bash(curl.exe -s http://localhost:9000/flight/slots/alice/booked)",
       "Bash(curl.exe -s -X DELETE http://localhost:9000/flight/bookings/2026-12-10-10/booking1)",
-      "Bash(curl.exe -s http://localhost:9000/flight/slots/superplane/booked)"
+      "Bash(curl.exe -s http://localhost:9000/flight/slots/superplane/booked)",
+      "Bash(mvn test *)"
     ]
   }
 }

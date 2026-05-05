@@ -30,7 +30,8 @@ public class ParticipantSlotsView extends View {
                     effects().updateRow(new SlotRow(e.slotId(), e.participantId(),
                             e.participantType().name(), e.bookingId(), "booked"));
                 case ParticipantSlotEntity.Event.Canceled e ->
-                    effects().deleteRow();
+                    effects().updateRow(new SlotRow(e.slotId(), e.participantId(),
+                            e.participantType().name(), e.bookingId(), "canceled"));
             };
         }
     }
@@ -47,11 +48,6 @@ public class ParticipantSlotsView extends View {
     }
 
     public record SlotList(List<SlotRow> slots) {
-    }
-
-    @Query("SELECT * as slots FROM participant_slots WHERE participantId = :participantId")
-    public QueryEffect<SlotList> getSlotsByParticipant(String participantId) {
-        return queryResult();
     }
 
     @Query("SELECT * as slots FROM participant_slots WHERE participantId = :participantId AND status = :status")

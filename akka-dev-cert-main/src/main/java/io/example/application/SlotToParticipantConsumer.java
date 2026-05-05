@@ -71,19 +71,5 @@ public class SlotToParticipantConsumer extends Consumer {
         };
     }
 
-    private String participantSlotId(BookingEvent.ParticipantMarkedAvailable e) {
-        return e.slotId() + "-" + e.participantId();
-    }
-
-    private String participantSlotId(BookingEvent.ParticipantUnmarkedAvailable e) {
-        return e.slotId() + "-" + e.participantId();
-    }
-
-    private String participantSlotId(BookingEvent.ParticipantBooked e) {
-        return e.slotId() + "-" + e.participantId();
-    }
-
-    private String participantSlotId(BookingEvent.ParticipantCanceled e) {
-        return e.slotId() + "-" + e.participantId();
-    }
 }
+
