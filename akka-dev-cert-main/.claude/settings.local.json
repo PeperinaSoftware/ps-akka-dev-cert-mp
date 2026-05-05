@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mvn compile *)",
+      "Bash(mvn help:effective-pom)",
+      "Bash(mvn exec:java)",
+      "Bash(echo \"PID: $!\")",
+      "Bash(curl -s http://localhost:9000/flight/availability/2026-12-10-10)",
+      "Bash(cd 'C:\\\\Users\\\\marce\\\\OneDrive\\\\Desktop\\\\CertificacionAKK\\\\akka-dev-cert-main')",
+      "Bash(mvn help:describe -Dplugin=exec -Ddetail)",
+      "Bash(curl -s -H \"Content-Type: application/json\" -X POST -d '{\"participantId\": \"alice\", \"participantType\": \"student\"}' localhost:9000/flight/availability/2026-12-10-10)",
+      "Bash(curl -s -H \"Content-Type: application/json\" -X POST -d '{\"participantId\": \"superplane\", \"participantType\": \"aircraft\"}' localhost:9000/flight/availability/2026-12-10-10)",
+      "Bash(curl -s -H \"Content-Type: application/json\" -X POST -d '{\"participantId\": \"superteacher\", \"participantType\": \"instructor\"}' localhost:9000/flight/availability/2026-12-10-10)",
+      "Bash(curl -s localhost:9000/flight/availability/2026-12-10-10)",
+      "Bash(curl -s -H \"Content-Type: application/json\" localhost:9000/flight/bookings/2026-12-10-10 -d '{\"bookingId\": \"booking4\", \"aircraftId\": \"superplane\", \"instructorId\": \"superteacher\", \"studentId\": \"alice\"}')",
+      "Bash(curl -s localhost:9000/flight/slots/alice/booked)",
+      "Bash(curl -s localhost:9000/flight/slots/alice/available)",
+      "Bash(xargs grep *)",
+      "Bash(curl -s -X DELETE localhost:9000/flight/bookings/2026-12-10-10/booking4)",
+      "Bash(curl.exe -s -H \"Content-Type: application/json\" -X POST -d \"{\\\\\"participantId\\\\\": \\\\\"alice\\\\\", \\\\\"participantType\\\\\": \\\\\"student\\\\\"}\" http://localhost:9000/flight/availability/2026-12-10-10)",
+      "Bash(curl.exe -s -H \"Content-Type: application/json\" -X POST -d \"{\\\\\"participantId\\\\\": \\\\\"superplane\\\\\", \\\\\"participantType\\\\\": \\\\\"aircraft\\\\\"}\" http://localhost:9000/flight/availability/2026-12-10-10)",
+      "Bash(curl.exe -s -H \"Content-Type: application/json\" -X POST -d \"{\\\\\"participantId\\\\\": \\\\\"superteacher\\\\\", \\\\\"participantType\\\\\": \\\\\"instructor\\\\\"}\" http://localhost:9000/flight/availability/2026-12-10-10)",
+      "Bash(curl.exe -s http://localhost:9000/flight/availability/2026-12-10-10)",
+      "Bash(curl.exe -s http://localhost:9000/flight/slots/alice/available)",
+      "Bash(curl.exe -s -H \"Content-Type: application/json\" -X POST -d \"{\\\\\"bookingId\\\\\": \\\\\"booking1\\\\\", \\\\\"aircraftId\\\\\": \\\\\"superplane\\\\\", \\\\\"instructorId\\\\\": \\\\\"superteacher\\\\\", \\\\\"studentId\\\\\": \\\\\"alice\\\\\"}\" http://localhost:9000/flight/bookings/2026-12-10-10)",
+      "Bash(curl.exe -s -H \"Content-Type: application/json\" -X POST -d \"{\\\\\"bookingId\\\\\": \\\\\"booking2\\\\\", \\\\\"aircraftId\\\\\": \\\\\"superplane\\\\\", \\\\\"instructorId\\\\\": \\\\\"superteacher\\\\\", \\\\\"studentId\\\\\": \\\\\"alice\\\\\"}\" http://localhost:9000/flight/bookings/2026-12-10-10)",
+      "Bash(curl.exe -s http://localhost:9000/flight/slots/alice/booked)",
+      "Bash(curl.exe -s -X DELETE http://localhost:9000/flight/bookings/2026-12-10-10/booking1)",
+      "Bash(curl.exe -s http://localhost:9000/flight/slots/superplane/booked)"
+    ]
+  }
+}
