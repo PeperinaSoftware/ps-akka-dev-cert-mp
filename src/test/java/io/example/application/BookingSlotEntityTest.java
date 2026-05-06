@@ -19,7 +19,8 @@ public class BookingSlotEntityTest {
   @Test
   void cancelBookingNotFoundReturnsError() {
     var testKit = EventSourcedTestKit.of(BookingSlotEntity::new);
-    var result = testKit.call(e -> e.cancelBooking("non-existent-booking"));
+    var cmd = new BookingSlotEntity.Command.CancelBooking("non-existent-booking");
+    var result = testKit.call(e -> e.cancelBooking(cmd));
     assertThat(result.isError()).isTrue();
     assertThat(result.getError()).contains("booking not found");
   }
@@ -94,7 +95,7 @@ public class BookingSlotEntityTest {
                 new BookingSlotEntity.Command.BookReservation(
                     "student-1", "aircraft-1", "instructor-1", "booking-1")));
 
-    var result = testKit.call(e -> e.cancelBooking("booking-1"));
+    var result = testKit.call(e -> e.cancelBooking(new BookingSlotEntity.Command.CancelBooking("booking-1")));
 
     assertThat(result.isError()).isFalse();
     assertThat(result.getAllEvents()).hasSize(3);

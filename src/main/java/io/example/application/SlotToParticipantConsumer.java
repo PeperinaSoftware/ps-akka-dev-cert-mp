@@ -62,7 +62,7 @@ public class SlotToParticipantConsumer extends Consumer {
     // {slotId}-{participantId}
     // We don't need the participant type here because the participant IDs
     // should always be unique/UUIDs
-    private String participantSlotId(BookingEvent event) {
+    String participantSlotId(BookingEvent event) {
         return switch (event) {
             case BookingEvent.ParticipantBooked evt -> evt.slotId() + "-" + evt.participantId();
             case BookingEvent.ParticipantUnmarkedAvailable evt -> evt.slotId() + "-" + evt.participantId();

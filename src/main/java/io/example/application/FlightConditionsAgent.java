@@ -41,7 +41,7 @@ public class FlightConditionsAgent extends Agent {
     }
 
     @FunctionTool(description = "Queries the weather conditions as they are forecasted based on the time slot ID of the training session booking")
-    private String getWeatherForecast(String timeSlotId) {
+    String getWeatherForecast(String timeSlotId) {
         try {
             String[] parts = timeSlotId.split("-");
             LocalDateTime slotTime = LocalDateTime.of(

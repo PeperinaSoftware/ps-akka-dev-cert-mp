@@ -66,7 +66,7 @@ public class FlightEndpoint extends AbstractHttpEndpoint {
         log.info("Canceling booking {} for slot {}", bookingId, slotId);
         return componentClient.forEventSourcedEntity(slotId)
                 .method(BookingSlotEntity::cancelBooking)
-                .invokeAsync(bookingId)
+                .invokeAsync(new BookingSlotEntity.Command.CancelBooking(bookingId))
                 .thenApply(__ -> HttpResponses.ok());
     }
 
@@ -117,7 +117,7 @@ public class FlightEndpoint extends AbstractHttpEndpoint {
                 .thenApply(__ -> HttpResponses.ok());
     }
 
-    private boolean isFutureSlot(String slotId) {
+    boolean isFutureSlot(String slotId) {
         try {
             String[] parts = slotId.split("-");
             LocalDateTime slotTime = LocalDateTime.of(

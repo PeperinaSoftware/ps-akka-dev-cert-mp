@@ -49,21 +49,21 @@ public class BookingSlotEntity extends EventSourcedEntity<Timeslot, BookingEvent
 
     // NOTE: canceling a booking should produce 3
     // `ParticipantCanceled` events
-    public Effect<Done> cancelBooking(String bookingId) {
-        var bookings = currentState().findBooking(bookingId);
+    public Effect<Done> cancelBooking(Command.CancelBooking cmd) {
+        var bookings = currentState().findBooking(cmd.bookingId());
         if (bookings.isEmpty()) {
-            return effects().error("booking not found: " + bookingId);
+            return effects().error("booking not found: " + cmd.bookingId());
         }
         if (bookings.size() != 3) {
-            return effects().error("inconsistent booking state for: " + bookingId);
+            return effects().error("inconsistent booking state for: " + cmd.bookingId());
         }
         var b0 = bookings.get(0);
         var b1 = bookings.get(1);
         var b2 = bookings.get(2);
         return effects().persist(
-                new BookingEvent.ParticipantCanceled(entityId, b0.participant().id(), b0.participant().participantType(), bookingId),
-                new BookingEvent.ParticipantCanceled(entityId, b1.participant().id(), b1.participant().participantType(), bookingId),
-                new BookingEvent.ParticipantCanceled(entityId, b2.participant().id(), b2.participant().participantType(), bookingId))
+                new BookingEvent.ParticipantCanceled(entityId, b0.participant().id(), b0.participant().participantType(), cmd.bookingId()),
+                new BookingEvent.ParticipantCanceled(entityId, b1.participant().id(), b1.participant().participantType(), cmd.bookingId()),
+                new BookingEvent.ParticipantCanceled(entityId, b2.participant().id(), b2.participant().participantType(), cmd.bookingId()))
                 .thenReply(__ -> Done.done());
     }
 
@@ -97,6 +97,9 @@ public class BookingSlotEntity extends EventSourcedEntity<Timeslot, BookingEvent
         record BookReservation(
                 String studentId, String aircraftId, String instructorId, String bookingId)
                 implements Command {
+        }
+
+        record CancelBooking(String bookingId) implements Command {
         }
     }
 }
