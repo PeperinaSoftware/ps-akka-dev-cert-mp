@@ -124,8 +124,7 @@ curl -s -o /dev/null -w "%{http_code}" \
 ### PASO 2 — Verificar estado interno del slot
 
 ```bash
-curl -s $BASE/flight/availability/$SLOT_OK | python3 -m json.tool
-```
+curl -s $BASE/flight/availability/$SLOT_OK ```
 
 ✅ Esperado:
 ```json
@@ -148,8 +147,7 @@ Esperá 2-3 segundos para que el consumer propague los eventos a la view.
 
 ```bash
 sleep 3
-curl -s $BASE/flight/slots/$STUDENT/available | python3 -m json.tool
-```
+curl -s $BASE/flight/slots/$STUDENT/available ```
 
 ✅ Esperado:
 ```json
@@ -167,9 +165,7 @@ curl -s $BASE/flight/slots/$STUDENT/available | python3 -m json.tool
 ```
 
 ```bash
-curl -s $BASE/flight/slots/$AIRCRAFT/available | python3 -m json.tool
-curl -s $BASE/flight/slots/$INSTRUCTOR/available | python3 -m json.tool
-```
+curl -s $BASE/flight/slots/$AIRCRAFT/available curl -s $BASE/flight/slots/$INSTRUCTOR/available ```
 
 ✅ Esperado: cada uno muestra su fila con `status: "available"`.
 
@@ -241,8 +237,7 @@ curl -s -w "\nHTTP: %{http_code}\n" \
 
 ```bash
 sleep 3
-curl -s $BASE/flight/slots/$STUDENT/booked | python3 -m json.tool
-```
+curl -s $BASE/flight/slots/$STUDENT/booked ```
 
 ✅ Esperado:
 ```json
@@ -260,9 +255,7 @@ curl -s $BASE/flight/slots/$STUDENT/booked | python3 -m json.tool
 ```
 
 ```bash
-curl -s $BASE/flight/slots/$AIRCRAFT/booked | python3 -m json.tool
-curl -s $BASE/flight/slots/$INSTRUCTOR/booked | python3 -m json.tool
-```
+curl -s $BASE/flight/slots/$AIRCRAFT/booked curl -s $BASE/flight/slots/$INSTRUCTOR/booked ```
 
 ✅ Esperado: los 3 participantes aparecen con `status: "booked"` y el mismo `bookingId`.
 
@@ -291,8 +284,7 @@ Canceling booking booking-cert-01 for slot ...  (superteacher)
 
 ```bash
 sleep 3
-curl -s $BASE/flight/slots/$STUDENT/canceled | python3 -m json.tool
-```
+curl -s $BASE/flight/slots/$STUDENT/canceled ```
 
 ✅ Esperado:
 ```json
@@ -310,9 +302,7 @@ curl -s $BASE/flight/slots/$STUDENT/canceled | python3 -m json.tool
 ```
 
 ```bash
-curl -s $BASE/flight/slots/$AIRCRAFT/canceled | python3 -m json.tool
-curl -s $BASE/flight/slots/$INSTRUCTOR/canceled | python3 -m json.tool
-```
+curl -s $BASE/flight/slots/$AIRCRAFT/canceled curl -s $BASE/flight/slots/$INSTRUCTOR/canceled ```
 
 ✅ Esperado: los 3 participantes aparecen con `status: "canceled"`.
 
@@ -321,8 +311,7 @@ curl -s $BASE/flight/slots/$INSTRUCTOR/canceled | python3 -m json.tool
 ### PASO 10 — Verificar que el slot quedó vacío
 
 ```bash
-curl -s $BASE/flight/availability/$SLOT_OK | python3 -m json.tool
-```
+curl -s $BASE/flight/availability/$SLOT_OK ```
 
 ✅ Esperado:
 ```json
