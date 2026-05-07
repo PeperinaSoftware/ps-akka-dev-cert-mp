@@ -76,8 +76,8 @@ En la terminal de curls, definí estos valores para reutilizarlos:
 # Slot en día par → condiciones buenas → booking debe APROBAR
 SLOT_OK="2026-08-10-10"
 
-# Slot en día impar → condiciones malas → booking debe RECHAZAR
-SLOT_BAD="2026-08-11-10"
+# Slot en hora nocturna → condiciones malas → booking debe RECHAZAR
+SLOT_BAD="2026-08-11-23"
 
 # Slot en el pasado → debe rechazarse antes de llamar al agente
 SLOT_PAST="2020-01-01-10"
@@ -184,7 +184,7 @@ curl -s -o /dev/null -w "%{http_code}" \
 
 ---
 
-### PASO 5 — Intentar booking con condiciones MALAS (día impar)
+### PASO 5 — Intentar booking con condiciones MALAS (hora nocturna)
 
 Primero marcá disponibilidad en el slot impar:
 
@@ -333,7 +333,7 @@ curl -s $BASE/flight/availability/$SLOT_OK ```
 | 4 | Marcar disponibilidad retorna 200 | ⬜ |
 | 5 | View muestra slots `available` | ⬜ |
 | 6 | Slot pasado retorna 400 | ⬜ |
-| 7 | Booking día impar retorna 400 (agente rechaza) | ⬜ |
+| 7 | Booking hora nocturna retorna 400 (agente rechaza) | ⬜ |
 | 8 | Booking día par retorna 201 | ⬜ |
 | 9 | View muestra slots `booked` para los 3 participantes | ⬜ |
 | 10 | Cancelar retorna 200 | ⬜ |

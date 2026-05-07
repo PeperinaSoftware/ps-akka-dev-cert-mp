@@ -3,10 +3,6 @@ package io.example.application;
 import akka.javasdk.agent.Agent;
 import akka.javasdk.annotations.Component;
 import akka.javasdk.annotations.FunctionTool;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 
 @Component(id = "flight-conditions-agent")
 public class FlightConditionsAgent extends Agent {
@@ -18,14 +14,14 @@ public class FlightConditionsAgent extends Agent {
 
             VFR minimum requirements:
             - Visibility: at least 3 statute miles
-            - Ceiling: at least 1000 feet AGL
+            - Ceiling: at least 1500 feet AGL
             - Wind speed: less than 25 knots
             - No active thunderstorms within 20 miles
             - No icing conditions
 
             Steps:
             1. Call getWeatherForecast with the timeSlotId.
-            2. If slot is more than 10 days in the future: meetsRequirements = true.
+            2. If the forecast says the slot is too far in the future: meetsRequirements = true.
             3. Otherwise evaluate conditions against VFR minimums above.
 
             You MUST respond with ONLY this exact JSON structure, nothing else:
@@ -43,28 +39,20 @@ public class FlightConditionsAgent extends Agent {
     @FunctionTool(description = "Queries the weather conditions as they are forecasted based on the time slot ID of the training session booking")
     String getWeatherForecast(String timeSlotId) {
         try {
-            String[] parts = timeSlotId.split("-");
-            LocalDateTime slotTime = LocalDateTime.of(
-                    Integer.parseInt(parts[0]), Integer.parseInt(parts[1]),
-                    Integer.parseInt(parts[2]), Integer.parseInt(parts[3]), 0);
+            int hour = Integer.parseInt(timeSlotId.substring(timeSlotId.lastIndexOf('-') + 1));
 
-            long daysUntilSlot = ChronoUnit.DAYS.between(LocalDate.now(), slotTime.toLocalDate());
-
-            if (daysUntilSlot > 10) {
-                return "Forecast unavailable: slot is more than 10 days in the future. Conditional approval applies.";
-            }
-
-            // Simulate varied conditions: even day = good, odd day = poor
-            int day = slotTime.getDayOfMonth();
-            if (day % 2 == 0) {
+            // Daytime hours (06:00-18:00) simulate good VFR conditions.
+            // Nighttime hours simulate poor conditions below VFR minimums.
+            // Slots beyond forecast range are handled by the agent via system prompt.
+            if (hour >= 6 && hour <= 18) {
                 return String.format(
-                        "Forecast for %s: Visibility 10 miles, Ceiling 3500 feet AGL, " +
-                        "Wind 8 knots from 270, No thunderstorms, No icing. Conditions are excellent for VFR flight.",
+                        "Forecast for %s: Clear skies, Visibility 10 miles, Ceiling 5000 feet AGL, " +
+                        "Wind 8 knots, No thunderstorms, No icing. Conditions are excellent for VFR flight.",
                         timeSlotId);
             } else {
                 return String.format(
-                        "Forecast for %s: Visibility 1 mile in fog, Ceiling 300 feet AGL, " +
-                        "Wind 35 knots gusting 45, Thunderstorms reported 5 miles northwest, Icing conditions present. " +
+                        "Forecast for %s: Overcast, Visibility 1 mile in fog, Ceiling 800 feet AGL, " +
+                        "Wind 30 knots gusting 45, Thunderstorms in area, Icing conditions present. " +
                         "Conditions are below VFR minimums.",
                         timeSlotId);
             }

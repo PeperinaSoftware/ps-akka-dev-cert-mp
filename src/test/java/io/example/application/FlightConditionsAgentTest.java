@@ -12,26 +12,32 @@ public class FlightConditionsAgentTest {
   private final FlightConditionsAgent agent = new FlightConditionsAgent();
 
   @Test
-  void forecastFarFutureSlotReturnsUnavailableMessage() {
-    // Slot 10+ years in future — always beyond 10-day window
-    String result = agent.getWeatherForecast("2099-06-15-10");
-    assertThat(result).contains("more than 10 days in the future");
-  }
-
-  @Test
-  void forecastEvenDayReturnsGoodConditions() {
-    // Use a date with even day that is in the past or near future
-    // We use 2026-01-02-10 (day=2, even) — always past, but logic still executes
-    String result = agent.getWeatherForecast("2026-01-02-10");
+  void forecastDaytimeHourReturnsGoodConditions() {
+    // Hour 10 (daytime: 06-18) → clear skies, VFR-friendly
+    String result = agent.getWeatherForecast("2026-08-10-10");
     assertThat(result).contains("Visibility 10 miles");
     assertThat(result).contains("Conditions are excellent for VFR flight");
   }
 
   @Test
-  void forecastOddDayReturnsPoorConditions() {
-    // Use a date with odd day
-    String result = agent.getWeatherForecast("2026-01-03-10");
+  void forecastNighttimeHourReturnsPoorConditions() {
+    // Hour 23 (nighttime: outside 06-18) → fog, low ceiling, below VFR minimums
+    String result = agent.getWeatherForecast("2026-08-11-23");
     assertThat(result).contains("Visibility 1 mile in fog");
+    assertThat(result).contains("below VFR minimums");
+  }
+
+  @Test
+  void forecastBoundaryHour6ReturnsGoodConditions() {
+    // Hour 6 is the lower boundary of daytime — should return good conditions
+    String result = agent.getWeatherForecast("2026-08-10-06");
+    assertThat(result).contains("Conditions are excellent for VFR flight");
+  }
+
+  @Test
+  void forecastBoundaryHour5ReturnsPoorConditions() {
+    // Hour 5 is just before daytime window — should return poor conditions
+    String result = agent.getWeatherForecast("2026-08-10-05");
     assertThat(result).contains("below VFR minimums");
   }
 

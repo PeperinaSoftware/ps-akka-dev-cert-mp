@@ -73,7 +73,7 @@ This implementation of the Flight Training Scheduler is built on **Akka SDK 3.5.
 - `ConditionsReport` uses `boolean` (primitive) rather than `Boolean` (object). A nullable `Boolean` would cause `NullPointerException` in the endpoint when unboxing `!report.meetsRequirements()` if the LLM fails to include the field in its JSON response.
 - The system prompt enforces **JSON-only output** explicitly, preventing the LLM from returning natural language responses that would fail deserialization.
 - Agent sessions are scoped to `{slotId}-{bookingId}`, ensuring each booking attempt gets a fresh, isolated conversation context without cross-contaminating state between requests.
-- Weather simulation uses even/odd day logic to produce deterministic, predictable results for testing — slots on even days approve, odd days reject.
+- Weather simulation uses **daytime/nighttime hour logic** for deterministic, date-independent results — slots with hour 06–18 return good VFR conditions (approve), hours outside that window return poor conditions (reject). This avoids coupling test scenarios to specific calendar dates.
 - `getWeatherForecast` is package-private to enable unit testing of the weather logic without requiring LLM invocation.
 
 ---
