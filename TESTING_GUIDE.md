@@ -17,8 +17,7 @@
 ```bash
 JAVA_HOME="$HOME/.sdkman/candidates/java/21.0.1-zulu" \
 PATH="$HOME/.sdkman/candidates/java/21.0.1-zulu/bin:$PATH" \
-mvn compile -Dspotless.skip=true
-```
+mvn compile ```
 
 ✅ Esperado: `BUILD SUCCESS`
 
@@ -29,8 +28,7 @@ mvn compile -Dspotless.skip=true
 ```bash
 JAVA_HOME="$HOME/.sdkman/candidates/java/21.0.1-zulu" \
 PATH="$HOME/.sdkman/candidates/java/21.0.1-zulu/bin:$PATH" \
-mvn test -Dspotless.skip=true
-```
+mvn test ```
 
 ✅ Esperado: `Tests run: 51, Failures: 0, Errors: 0` + `BUILD SUCCESS`
 
@@ -45,8 +43,7 @@ export ANTHROPIC_API_KEY="tu-api-key-aqui"
 
 JAVA_HOME="$HOME/.sdkman/candidates/java/21.0.1-zulu" \
 PATH="$HOME/.sdkman/candidates/java/21.0.1-zulu/bin:$PATH" \
-mvn compile -Dspotless.skip=true && mvn exec:java -Dspotless.skip=true
-```
+mvn compile -Dspotless.skip=true && mvn exec:java ```
 
 ✅ Esperado en los logs:
 ```
