@@ -48,6 +48,7 @@ public class FlightEndpoint extends AbstractHttpEndpoint {
                 .method(FlightConditionsAgent::query)
                 .invokeAsync(slotId)
                 .thenCompose(report -> {
+                    log.info("Flight conditions report for slot {}: meetsRequirements={}", slotId, report.meetsRequirements());
                     if (!report.meetsRequirements()) {
                         return CompletableFuture.failedFuture(
                                 HttpException.badRequest("flight conditions not approved for slot " + slotId));

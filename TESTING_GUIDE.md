@@ -229,7 +229,11 @@ curl -s -w "\nHTTP: %{http_code}\n" \
 
 ✅ Esperado: `201`
 
-> En los logs del servicio deberías ver la llamada al agente LLM y la respuesta JSON con `meetsRequirements: true`.
+> En los logs del servicio deberías ver:
+> ```
+> Creating booking for slot 2026-08-10-10: ...
+> Flight conditions report for slot 2026-08-10-10: meetsRequirements=true
+> ```
 
 ---
 
