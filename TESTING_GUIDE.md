@@ -12,38 +12,52 @@
 
 ---
 
-## 2. Compilar
+## 2. Configurar Java 21 (hacer una sola vez por terminal)
 
 ```bash
-JAVA_HOME="$HOME/.sdkman/candidates/java/21.0.1-zulu" \
-PATH="$HOME/.sdkman/candidates/java/21.0.1-zulu/bin:$PATH" \
-mvn compile ```
+export JAVA_HOME="$HOME/.sdkman/candidates/java/21.0.1-zulu"
+export PATH="$JAVA_HOME/bin:$PATH"
+```
+
+Verificá que quedó bien:
+```bash
+java -version
+```
+✅ Esperado: `openjdk version "21..."`
+
+---
+
+## 3. Compilar
+
+```bash
+mvn compile
+```
 
 ✅ Esperado: `BUILD SUCCESS`
 
 ---
 
-## 3. Correr los tests unitarios
+## 4. Correr los tests unitarios
 
 ```bash
-JAVA_HOME="$HOME/.sdkman/candidates/java/21.0.1-zulu" \
-PATH="$HOME/.sdkman/candidates/java/21.0.1-zulu/bin:$PATH" \
-mvn test ```
+mvn test
+```
 
 ✅ Esperado: `Tests run: 51, Failures: 0, Errors: 0` + `BUILD SUCCESS`
 
 ---
 
-## 4. Levantar la aplicación
+## 5. Levantar la aplicación
 
-En una terminal separada, exportá la API key y levantá el servicio:
+En una terminal separada, configurá Java 21 y la API key:
 
 ```bash
+export JAVA_HOME="$HOME/.sdkman/candidates/java/21.0.1-zulu"
+export PATH="$JAVA_HOME/bin:$PATH"
 export ANTHROPIC_API_KEY="tu-api-key-aqui"
 
-JAVA_HOME="$HOME/.sdkman/candidates/java/21.0.1-zulu" \
-PATH="$HOME/.sdkman/candidates/java/21.0.1-zulu/bin:$PATH" \
-mvn compile -Dspotless.skip=true && mvn exec:java ```
+mvn compile && mvn exec:java
+```
 
 ✅ Esperado en los logs:
 ```
@@ -54,7 +68,7 @@ Dejá esta terminal abierta y abrí otra para los curls.
 
 ---
 
-## 5. Variables de entorno para los curls
+## 6. Variables de entorno para los curls
 
 En la terminal de curls, definí estos valores para reutilizarlos:
 
@@ -77,7 +91,7 @@ BASE="http://localhost:9000"
 
 ---
 
-## 6. Flujo completo de prueba
+## 7. Flujo completo de prueba
 
 ### PASO 1 — Marcar disponibilidad
 
@@ -320,7 +334,7 @@ curl -s $BASE/flight/availability/$SLOT_OK | python3 -m json.tool
 
 ---
 
-## 7. Checklist final
+## 8. Checklist final
 
 | # | Verificación | Resultado |
 |---|---|---|
@@ -341,7 +355,7 @@ Si los 12 ítems están ✅, el proyecto está listo para certificación.
 
 ---
 
-## 8. Datos para el mail de certificación
+## 9. Datos para el mail de certificación
 
 ```
 Para: certification@akka.io
