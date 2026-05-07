@@ -110,6 +110,14 @@ Full integration testing of the consumer dispatch and view propagation requires 
 
 ---
 
+## Development Notes
+
+This implementation was built using **AI-assisted Software-Driven Development (SDD)** with **Claude Sonnet 4.6** as the primary development assistant. All architectural decisions, component design, SDK usage patterns, and test coverage described in this document were defined, reviewed, and validated through an iterative SDD workflow.
+
+The `FlightConditionsAgent` uses **Claude Haiku 4.5** (`claude-haiku-4-5-20251001`) as its LLM backend for VFR conditions evaluation. Haiku was selected for its low latency and cost efficiency in a high-frequency, structured JSON response use case where reasoning depth is not a primary requirement.
+
+---
+
 # How to Get Certified
 
 The Flight Training Scheduler project serves as the certification test for Akka developers. This certification process evaluates your ability to implement a real-world application using Akka SDK components given a set of requirements, scaffolding, and some starter classes.
