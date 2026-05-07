@@ -45,7 +45,7 @@ export ANTHROPIC_API_KEY="tu-api-key-aqui"
 
 JAVA_HOME="$HOME/.sdkman/candidates/java/21.0.1-zulu" \
 PATH="$HOME/.sdkman/candidates/java/21.0.1-zulu/bin:$PATH" \
-mvn exec:java -Dspotless.skip=true
+mvn compile -Dspotless.skip=true && mvn exec:java -Dspotless.skip=true
 ```
 
 ✅ Esperado en los logs:
