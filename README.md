@@ -13,7 +13,15 @@ Backend for a flight training booking system built with **Akka SDK 3.5.6**. Impl
 | [HTTP API](#http-api) | Endpoints and status codes |
 | [Run](#run) | Build and start the service |
 | [Testing](#testing) | Unit tests and end-to-end guide |
-| [References](#references) | Docs, SDK links |
+| [SDK References](#sdk-references) | Official Akka SDK documentation |
+
+**Project documentation**
+
+| Document | Description |
+|---|---|
+| [Certification Requirements](docs/REFERENCE.md) | Original certification brief as provided by Akka |
+| [Architecture & Design Decisions](docs/ARCHITECTURE.md) | Design rationale and key decisions per component |
+| [End-to-End Testing Guide](docs/TESTING_GUIDE.md) | Full curl-based verification walkthrough (10 steps) |
 
 ---
 
@@ -193,11 +201,8 @@ For the full end-to-end curl walkthrough (mark availability â†’ bad conditions â
 
 ---
 
-## References
+## SDK References
 
-- [Certification Requirements](docs/REFERENCE.md)
-- [Architecture & Design Decisions](docs/ARCHITECTURE.md)
-- [End-to-End Testing Guide](docs/TESTING_GUIDE.md)
 - [Event-Sourced Entities](https://doc.akka.io/java/event-sourced-entities.html)
 - [HTTP Endpoints](https://doc.akka.io/java/http-endpoints.html)
 - [Views](https://doc.akka.io/java/views.html)
