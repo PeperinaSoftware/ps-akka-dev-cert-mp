@@ -357,15 +357,3 @@ curl -s $BASE/flight/availability/$SLOT_OK
 | 12 | Slot internal state is empty after cancellation | ⬜ |
 
 All 12 items ✅ → project is ready for certification.
-
----
-
-## 9. Certification submission
-
-```
-To: certification@akka.io
-Subject: Akka Developer Certification Submission
-
-Name: [Your name]
-Repository: https://github.com/PeperinaSoftware/ps-akka-dev-cert-mp
-```
