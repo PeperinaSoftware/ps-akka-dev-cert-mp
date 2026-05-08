@@ -1,85 +1,85 @@
-# Testing Guide — Flight Training Scheduler
-## Chequeo final pre-certificación
+# End-to-End Testing Guide — Flight Training Scheduler
+## Pre-certification verification checklist
 
 ---
 
-## 1. Requisitos previos
+## 1. Prerequisites
 
-- Java 21 disponible vía sdkman
-- API Key de Anthropic activa y con crédito
+- Java 21 available via sdkman
+- Active Anthropic API key with available credits
 - Maven 3.9+
-- Servicio **detenido** antes de compilar
+- Service **stopped** before compiling
 
 ---
 
-## 2. Configurar Java 21 (hacer una sola vez por terminal)
+## 2. Configure Java 21 (once per terminal session)
 
 ```bash
 export JAVA_HOME="$HOME/.sdkman/candidates/java/21.0.1-zulu"
 export PATH="$JAVA_HOME/bin:$PATH"
 ```
 
-Verificá que quedó bien:
+Verify it is set correctly:
 ```bash
 java -version
 ```
-✅ Esperado: `openjdk version "21..."`
+✅ Expected: `openjdk version "21..."`
 
 ---
 
-## 3. Compilar
+## 3. Compile
 
 ```bash
 mvn compile
 ```
 
-✅ Esperado: `BUILD SUCCESS`
+✅ Expected: `BUILD SUCCESS`
 
 ---
 
-## 4. Correr los tests unitarios
+## 4. Run unit tests
 
 ```bash
 mvn test
 ```
 
-✅ Esperado: `Tests run: 51, Failures: 0, Errors: 0` + `BUILD SUCCESS`
+✅ Expected: `Tests run: 52, Failures: 0, Errors: 0` + `BUILD SUCCESS`
 
 ---
 
-## 5. Levantar la aplicación
+## 5. Start the service
 
-En una terminal separada, configurá Java 21 y la API key:
+In a separate terminal, configure Java 21 and the API key:
 
 ```bash
 export JAVA_HOME="$HOME/.sdkman/candidates/java/21.0.1-zulu"
 export PATH="$JAVA_HOME/bin:$PATH"
-export ANTHROPIC_API_KEY="tu-api-key-aqui"
+export ANTHROPIC_API_KEY="your-api-key-here"
 
 mvn compile && mvn exec:java
 ```
 
-✅ Esperado en los logs:
+✅ Expected in the logs:
 ```
 Akka Runtime started at 127.0.0.1:9000
 ```
 
-Dejá esta terminal abierta y abrí otra para los curls.
+Leave this terminal open and open a new one for the curl commands.
 
 ---
 
-## 6. Variables de entorno para los curls
+## 6. Environment variables for curl commands
 
-En la terminal de curls, definí estos valores para reutilizarlos:
+In the curl terminal, define these values for reuse:
 
 ```bash
-# Slot en día par → condiciones buenas → booking debe APROBAR
+# Daytime slot (hour 10) → good VFR conditions → booking should APPROVE
 SLOT_OK="2026-08-10-10"
 
-# Slot en hora nocturna → condiciones malas → booking debe RECHAZAR
+# Nighttime slot (hour 23) → poor conditions → booking should REJECT
 SLOT_BAD="2026-08-11-23"
 
-# Slot en el pasado → debe rechazarse antes de llamar al agente
+# Past slot → must be rejected before calling the agent
 SLOT_PAST="2020-01-01-10"
 
 STUDENT="alice"
@@ -91,9 +91,9 @@ BASE="http://localhost:9000"
 
 ---
 
-## 7. Flujo completo de prueba
+## 7. Full test flow
 
-### PASO 1 — Marcar disponibilidad
+### STEP 1 — Mark availability
 
 ```bash
 curl -s -o /dev/null -w "%{http_code}" \
@@ -101,7 +101,7 @@ curl -s -o /dev/null -w "%{http_code}" \
   -X POST -d "{\"participantId\": \"$STUDENT\", \"participantType\": \"student\"}" \
   $BASE/flight/availability/$SLOT_OK
 ```
-✅ Esperado: `200`
+✅ Expected: `200`
 
 ```bash
 curl -s -o /dev/null -w "%{http_code}" \
@@ -109,7 +109,7 @@ curl -s -o /dev/null -w "%{http_code}" \
   -X POST -d "{\"participantId\": \"$AIRCRAFT\", \"participantType\": \"aircraft\"}" \
   $BASE/flight/availability/$SLOT_OK
 ```
-✅ Esperado: `200`
+✅ Expected: `200`
 
 ```bash
 curl -s -o /dev/null -w "%{http_code}" \
@@ -117,16 +117,17 @@ curl -s -o /dev/null -w "%{http_code}" \
   -X POST -d "{\"participantId\": \"$INSTRUCTOR\", \"participantType\": \"instructor\"}" \
   $BASE/flight/availability/$SLOT_OK
 ```
-✅ Esperado: `200`
+✅ Expected: `200`
 
 ---
 
-### PASO 2 — Verificar estado interno del slot
+### STEP 2 — Verify slot internal state
 
 ```bash
-curl -s $BASE/flight/availability/$SLOT_OK ```
+curl -s $BASE/flight/availability/$SLOT_OK
+```
 
-✅ Esperado:
+✅ Expected:
 ```json
 {
   "bookings": [],
@@ -137,19 +138,20 @@ curl -s $BASE/flight/availability/$SLOT_OK ```
   ]
 }
 ```
-> El orden de los participantes puede variar (es un Set).
+> Participant order may vary (backed by a Set).
 
 ---
 
-### PASO 3 — Consultar la View (slots por participante)
+### STEP 3 — Query the View (slots by participant)
 
-Esperá 2-3 segundos para que el consumer propague los eventos a la view.
+Wait 2–3 seconds for the consumer to propagate events to the view.
 
 ```bash
 sleep 3
-curl -s $BASE/flight/slots/$STUDENT/available ```
+curl -s $BASE/flight/slots/$STUDENT/available
+```
 
-✅ Esperado:
+✅ Expected:
 ```json
 {
   "slots": [
@@ -165,13 +167,15 @@ curl -s $BASE/flight/slots/$STUDENT/available ```
 ```
 
 ```bash
-curl -s $BASE/flight/slots/$AIRCRAFT/available curl -s $BASE/flight/slots/$INSTRUCTOR/available ```
+curl -s $BASE/flight/slots/$AIRCRAFT/available
+curl -s $BASE/flight/slots/$INSTRUCTOR/available
+```
 
-✅ Esperado: cada uno muestra su fila con `status: "available"`.
+✅ Expected: each shows its own row with `status: "available"`.
 
 ---
 
-### PASO 4 — Intentar booking con slot PASADO (debe fallar)
+### STEP 4 — Attempt booking with a PAST slot (must fail)
 
 ```bash
 curl -s -o /dev/null -w "%{http_code}" \
@@ -180,13 +184,13 @@ curl -s -o /dev/null -w "%{http_code}" \
   $BASE/flight/bookings/$SLOT_PAST
 ```
 
-✅ Esperado: `400`
+✅ Expected: `400`
 
 ---
 
-### PASO 5 — Intentar booking con condiciones MALAS (hora nocturna)
+### STEP 5 — Attempt booking with BAD conditions (nighttime slot)
 
-Primero marcá disponibilidad en el slot impar:
+First, mark availability for the nighttime slot:
 
 ```bash
 curl -s -o /dev/null -w "%{http_code}" \
@@ -205,7 +209,7 @@ curl -s -o /dev/null -w "%{http_code}" \
   $BASE/flight/availability/$SLOT_BAD
 ```
 
-Ahora intentá el booking:
+Now attempt the booking:
 
 ```bash
 curl -s -w "\nHTTP: %{http_code}\n" \
@@ -214,11 +218,11 @@ curl -s -w "\nHTTP: %{http_code}\n" \
   $BASE/flight/bookings/$SLOT_BAD
 ```
 
-✅ Esperado: `400` con mensaje que contiene `flight conditions not approved`
+✅ Expected: `400` with a message containing `flight conditions not approved`
 
 ---
 
-### PASO 6 — Booking EXITOSO (día par, condiciones buenas)
+### STEP 6 — Successful booking (daytime slot, good conditions)
 
 ```bash
 curl -s -w "\nHTTP: %{http_code}\n" \
@@ -227,9 +231,9 @@ curl -s -w "\nHTTP: %{http_code}\n" \
   $BASE/flight/bookings/$SLOT_OK
 ```
 
-✅ Esperado: `201`
+✅ Expected: `201`
 
-> En los logs del servicio deberías ver:
+> In the service logs you should see:
 > ```
 > Creating booking for slot 2026-08-10-10: ...
 > Flight conditions report for slot 2026-08-10-10: meetsRequirements=true
@@ -237,13 +241,14 @@ curl -s -w "\nHTTP: %{http_code}\n" \
 
 ---
 
-### PASO 7 — Verificar estado booked en la View
+### STEP 7 — Verify booked status in the View
 
 ```bash
 sleep 3
-curl -s $BASE/flight/slots/$STUDENT/booked ```
+curl -s $BASE/flight/slots/$STUDENT/booked
+```
 
-✅ Esperado:
+✅ Expected:
 ```json
 {
   "slots": [
@@ -259,13 +264,15 @@ curl -s $BASE/flight/slots/$STUDENT/booked ```
 ```
 
 ```bash
-curl -s $BASE/flight/slots/$AIRCRAFT/booked curl -s $BASE/flight/slots/$INSTRUCTOR/booked ```
+curl -s $BASE/flight/slots/$AIRCRAFT/booked
+curl -s $BASE/flight/slots/$INSTRUCTOR/booked
+```
 
-✅ Esperado: los 3 participantes aparecen con `status: "booked"` y el mismo `bookingId`.
+✅ Expected: all 3 participants show `status: "booked"` with the same `bookingId`.
 
 ---
 
-### PASO 8 — Cancelar el booking
+### STEP 8 — Cancel the booking
 
 ```bash
 curl -s -w "\nHTTP: %{http_code}\n" \
@@ -273,24 +280,26 @@ curl -s -w "\nHTTP: %{http_code}\n" \
   $BASE/flight/bookings/$SLOT_OK/$BOOKING_ID
 ```
 
-✅ Esperado: `200`
+✅ Expected: `200`
 
-En los logs del servicio deberías ver 3 líneas:
+In the service logs you should see 3 lines:
 ```
-Canceling booking booking-cert-01 for slot ...  (alice)
-Canceling booking booking-cert-01 for slot ...  (superplane)
-Canceling booking booking-cert-01 for slot ...  (superteacher)
+Canceling booking booking-cert-01 from slot 2026-08-10-10
+Canceling booking booking-cert-01 for participant alice
+Canceling booking booking-cert-01 for participant superplane
+Canceling booking booking-cert-01 for participant superteacher
 ```
 
 ---
 
-### PASO 9 — Verificar status CANCELED en la View
+### STEP 9 — Verify CANCELED status in the View
 
 ```bash
 sleep 3
-curl -s $BASE/flight/slots/$STUDENT/canceled ```
+curl -s $BASE/flight/slots/$STUDENT/canceled
+```
 
-✅ Esperado:
+✅ Expected:
 ```json
 {
   "slots": [
@@ -306,18 +315,21 @@ curl -s $BASE/flight/slots/$STUDENT/canceled ```
 ```
 
 ```bash
-curl -s $BASE/flight/slots/$AIRCRAFT/canceled curl -s $BASE/flight/slots/$INSTRUCTOR/canceled ```
+curl -s $BASE/flight/slots/$AIRCRAFT/canceled
+curl -s $BASE/flight/slots/$INSTRUCTOR/canceled
+```
 
-✅ Esperado: los 3 participantes aparecen con `status: "canceled"`.
+✅ Expected: all 3 participants show `status: "canceled"`.
 
 ---
 
-### PASO 10 — Verificar que el slot quedó vacío
+### STEP 10 — Verify the slot is empty
 
 ```bash
-curl -s $BASE/flight/availability/$SLOT_OK ```
+curl -s $BASE/flight/availability/$SLOT_OK
+```
 
-✅ Esperado:
+✅ Expected:
 ```json
 {
   "bookings": [],
@@ -327,33 +339,33 @@ curl -s $BASE/flight/availability/$SLOT_OK ```
 
 ---
 
-## 8. Checklist final
+## 8. Final checklist
 
-| # | Verificación | Resultado |
+| # | Verification | Result |
 |---|---|---|
-| 1 | `mvn compile` BUILD SUCCESS | ⬜ |
-| 2 | `mvn test` 51 tests, 0 failures | ⬜ |
-| 3 | Servicio levanta en puerto 9000 | ⬜ |
-| 4 | Marcar disponibilidad retorna 200 | ⬜ |
-| 5 | View muestra slots `available` | ⬜ |
-| 6 | Slot pasado retorna 400 | ⬜ |
-| 7 | Booking hora nocturna retorna 400 (agente rechaza) | ⬜ |
-| 8 | Booking día par retorna 201 | ⬜ |
-| 9 | View muestra slots `booked` para los 3 participantes | ⬜ |
-| 10 | Cancelar retorna 200 | ⬜ |
-| 11 | View muestra slots `canceled` para los 3 participantes | ⬜ |
-| 12 | Slot interno queda vacío tras cancelación | ⬜ |
+| 1 | `mvn compile` → BUILD SUCCESS | ⬜ |
+| 2 | `mvn test` → 52 tests, 0 failures | ⬜ |
+| 3 | Service starts on port 9000 | ⬜ |
+| 4 | Mark availability returns 200 | ⬜ |
+| 5 | View shows `available` slots for all 3 participants | ⬜ |
+| 6 | Past slot returns 400 | ⬜ |
+| 7 | Nighttime slot booking returns 400 (agent rejects) | ⬜ |
+| 8 | Daytime slot booking returns 201 | ⬜ |
+| 9 | View shows `booked` slots for all 3 participants | ⬜ |
+| 10 | Cancel returns 200 | ⬜ |
+| 11 | View shows `canceled` slots for all 3 participants | ⬜ |
+| 12 | Slot internal state is empty after cancellation | ⬜ |
 
-Si los 12 ítems están ✅, el proyecto está listo para certificación.
+All 12 items ✅ → project is ready for certification.
 
 ---
 
-## 9. Datos para el mail de certificación
+## 9. Certification submission
 
 ```
-Para: certification@akka.io
-Asunto: Akka Developer Certification Submission
+To: certification@akka.io
+Subject: Akka Developer Certification Submission
 
-Nombre: [Tu nombre]
-Repositorio: https://github.com/PeperinaSoftware/ps-akka-dev-cert-mp
+Name: [Your name]
+Repository: https://github.com/PeperinaSoftware/ps-akka-dev-cert-mp
 ```
