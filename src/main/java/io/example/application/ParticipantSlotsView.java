@@ -7,13 +7,9 @@ import akka.javasdk.annotations.Table;
 import akka.javasdk.view.TableUpdater;
 import akka.javasdk.view.View;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Component(id = "view-participant-slots")
 public class ParticipantSlotsView extends View {
-
-    private static Logger logger = LoggerFactory.getLogger(ParticipantSlotsView.class);
 
     @Table("participant_slots")
     @Consume.FromEventSourcedEntity(ParticipantSlotEntity.class)

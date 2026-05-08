@@ -23,12 +23,16 @@ public class BookingSlotEntity extends EventSourcedEntity<Timeslot, BookingEvent
     }
 
     public Effect<Done> markSlotAvailable(Command.MarkSlotAvailable cmd) {
+        logger.info("Participant {} ({}) marked available for slot {}",
+                cmd.participant().id(), cmd.participant().participantType(), entityId);
         var event = new BookingEvent.ParticipantMarkedAvailable(
                 entityId, cmd.participant().id(), cmd.participant().participantType());
         return effects().persist(event).thenReply(__ -> Done.done());
     }
 
     public Effect<Done> unmarkSlotAvailable(Command.UnmarkSlotAvailable cmd) {
+        logger.info("Participant {} ({}) unmarked availability for slot {}",
+                cmd.participant().id(), cmd.participant().participantType(), entityId);
         var event = new BookingEvent.ParticipantUnmarkedAvailable(
                 entityId, cmd.participant().id(), cmd.participant().participantType());
         return effects().persist(event).thenReply(__ -> Done.done());
@@ -38,8 +42,12 @@ public class BookingSlotEntity extends EventSourcedEntity<Timeslot, BookingEvent
     // `ParticipantBooked` events
     public Effect<Done> bookSlot(Command.BookReservation cmd) {
         if (!currentState().isBookable(cmd.studentId(), cmd.aircraftId(), cmd.instructorId())) {
+            logger.warn("Cannot book slot {}: not all participants available (student={}, aircraft={}, instructor={})",
+                    entityId, cmd.studentId(), cmd.aircraftId(), cmd.instructorId());
             return effects().error("not all participants available for slot");
         }
+        logger.info("Booking slot {} — student={}, aircraft={}, instructor={}, bookingId={}",
+                entityId, cmd.studentId(), cmd.aircraftId(), cmd.instructorId(), cmd.bookingId());
         return effects().persist(
                 new BookingEvent.ParticipantBooked(entityId, cmd.studentId(), ParticipantType.STUDENT, cmd.bookingId()),
                 new BookingEvent.ParticipantBooked(entityId, cmd.aircraftId(), ParticipantType.AIRCRAFT, cmd.bookingId()),
@@ -52,11 +60,15 @@ public class BookingSlotEntity extends EventSourcedEntity<Timeslot, BookingEvent
     public Effect<Done> cancelBooking(Command.CancelBooking cmd) {
         var bookings = currentState().findBooking(cmd.bookingId());
         if (bookings.isEmpty()) {
+            logger.warn("Booking {} not found in slot {}", cmd.bookingId(), entityId);
             return effects().error("booking not found: " + cmd.bookingId());
         }
         if (bookings.size() != 3) {
+            logger.warn("Inconsistent booking state for {} in slot {} — expected 3 entries, found {}",
+                    cmd.bookingId(), entityId, bookings.size());
             return effects().error("inconsistent booking state for: " + cmd.bookingId());
         }
+        logger.info("Canceling booking {} from slot {}", cmd.bookingId(), entityId);
         var b0 = bookings.get(0);
         var b1 = bookings.get(1);
         var b2 = bookings.get(2);

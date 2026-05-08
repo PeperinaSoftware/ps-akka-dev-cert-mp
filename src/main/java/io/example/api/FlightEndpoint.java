@@ -39,6 +39,7 @@ public class FlightEndpoint extends AbstractHttpEndpoint {
         log.info("Creating booking for slot {}: {}", slotId, request);
 
         if (!isFutureSlot(slotId)) {
+            log.warn("Rejected booking for slot {} — slot is in the past", slotId);
             throw HttpException.badRequest("slot is not in the future");
         }
 
@@ -111,6 +112,7 @@ public class FlightEndpoint extends AbstractHttpEndpoint {
             log.warn("Bad participant type {}", request.participantType());
             throw HttpException.badRequest("invalid participant type");
         }
+        log.info("Unmarking timeslot availability for entity {}", slotId);
         var cmd = new BookingSlotEntity.Command.UnmarkSlotAvailable(new Participant(request.participantId(), participantType));
         return componentClient.forEventSourcedEntity(slotId)
                 .method(BookingSlotEntity::unmarkSlotAvailable)
